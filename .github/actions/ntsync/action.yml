@@ -1,0 +1,47 @@
+name: Add NTSync Driver
+description: NT synchronization primitives for Wine/Proton
+
+runs:
+  using: composite
+  steps:
+    - name: Download ntsync.c
+      shell: bash
+      run: |
+        curl -fsSL \
+          "https://raw.githubusercontent.com/torvalds/linux/master/drivers/misc/ntsync.c" \
+          -o "$GITHUB_WORKSPACE/kernel/common/drivers/misc/ntsync.c"
+
+    - name: Download ntsync.h
+      shell: bash
+      run: |
+        curl -fsSL \
+          "https://raw.githubusercontent.com/torvalds/linux/master/include/uapi/linux/ntsync.h" \
+          -o "$GITHUB_WORKSPACE/kernel/common/include/uapi/linux/ntsync.h"
+
+    - name: Register in Kconfig
+      shell: bash
+      working-directory: ${{ github.workspace }}/kernel/common/drivers/misc
+      run: |
+        if ! grep -q "NTSYNC" Kconfig; then
+          cat >> Kconfig << 'EOF'
+
+config NTSYNC
+    tristate "NT synchronization primitive emulation"
+    help
+      Kernel support for emulation of NT synchronization primitives.
+      Required for Wine and Proton.
+EOF
+        fi
+
+    - name: Register in Makefile
+      shell: bash
+      working-directory: ${{ github.workspace }}/kernel/common/drivers/misc
+      run: |
+        if ! grep -q "ntsync" Makefile; then
+          echo "obj-\$(CONFIG_NTSYNC) += ntsync.o" >> Makefile
+        fi
+
+    - name: Enable in config fragment
+      shell: bash
+      run: |
+        echo "CONFIG_NTSYNC=y" >> "$GITHUB_WORKSPACE/wild_gki.fragment"
