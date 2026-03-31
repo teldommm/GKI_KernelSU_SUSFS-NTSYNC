@@ -204,6 +204,9 @@ jobs:
         os_patch_level: ${{ steps.parse.outputs.os_patch_level }}
         sublevel: ${{ steps.extract.outputs.sublevel }}
 
+    - name: Add NTSync Driver
+      uses: ./.github/actions/ntsync
+      
     - name: Setup Baseband Guard
       if: contains(inputs.feature_set, 'BBG')
       uses: ./.github/actions/bbg
