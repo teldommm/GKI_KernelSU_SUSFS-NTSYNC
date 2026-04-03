@@ -1,7 +1,18 @@
 <div align="center">
 
-Wild gki kernels with support ntsync for android emulation.
-Created only for own usage, I am not responsible for your devices.
+🌌 Wild GKI Kernels
+Custom GKI Kernels with NTSYNC support for Android Emulation.
+🛠 О технологии NTSYNC
+# NTSYNC — это специальный драйвер синхронизации, разработанный для значительного улучшения работы Windows-приложений и игр внутри Android-эмуляторов (например, через Winlator, Box64Droid или Termux-box).
+Что это дает:
+Снижение задержек: Прямая реализация примитивов синхронизации NT в ядре Linux сокращает накладные расходы при эмуляции API Windows.
+Повышение FPS: Устранение «бутылочного горлышка» в многопоточных играх, где важна быстрая обработка сигналов синхронизации.
+Стабильность: Улучшает совместимость с тяжелым софтом, который активно использует блокировки и ожидание потоков.
 
-all credits(script): to TheWildJames
+### [!WARNING]
+Disclaimer: Данная сборка создана исключительно для личного использования. Автор не несет ответственности
+за сохранность вашего устройства. Все действия вы выполняете на свой страх и риск.
+
+### 👤 Credits
+Script & Logic: TheWildJames
 Patreon: <https://patreon.com/WildKernels>
