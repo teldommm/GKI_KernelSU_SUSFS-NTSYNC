@@ -836,11 +836,14 @@ static void put_obj(struct ntsync_obj *obj)
 static int ntsync_schedule(const struct ntsync_q *q, const struct ntsync_wait_args *args)
 {
 	ktime_t timeout = ns_to_ktime(args->timeout);
-	bool use_realtime = !!(args->flags & NTSYNC_WAIT_REALTIME);
+	clockid_t clock = CLOCK_MONOTONIC;
 	ktime_t *timeout_ptr;
 	int ret = 0;
 
 	timeout_ptr = (args->timeout == U64_MAX ? NULL : &timeout);
+
+	if (args->flags & NTSYNC_WAIT_REALTIME)
+		clock = CLOCK_REALTIME;
 
 	do {
 		if (signal_pending(current)) {
@@ -853,16 +856,7 @@ static int ntsync_schedule(const struct ntsync_q *q, const struct ntsync_wait_ar
 			ret = 0;
 			break;
 		}
-		/*
-		 * GKI 6.6 compatibility: use HRTIMER_MODE flags instead of
-		 * passing clockid_t to schedule_hrtimeout_range_clock().
-		 */
-		if (use_realtime)
-			ret = schedule_hrtimeout_range(timeout_ptr, 0,
-						      HRTIMER_MODE_ABS_REALTIME);
-		else
-			ret = schedule_hrtimeout_range(timeout_ptr, 0,
-						      HRTIMER_MODE_ABS);
+		ret = schedule_hrtimeout_range_clock(timeout_ptr, 0, HRTIMER_MODE_ABS, clock);
 	} while (ret < 0);
 	__set_current_state(TASK_RUNNING);
 
